@@ -6,3 +6,4 @@ supabase
 stripe
 python-dotenv
 pillow
+razorpay
