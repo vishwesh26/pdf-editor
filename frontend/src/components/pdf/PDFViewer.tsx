@@ -66,9 +66,10 @@ export default function PDFViewer({ url }: PDFViewerProps) {
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
-        const renderContext = {
+        const renderContext: any = {
           canvasContext: context,
           viewport: viewport,
+          canvas: canvas,
         };
 
         renderTask = page.render(renderContext);
