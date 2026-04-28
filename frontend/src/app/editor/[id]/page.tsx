@@ -39,7 +39,8 @@ export default function EditorPage() {
 
     const fetchBlocks = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/pdf/${fileId}/text-blocks`);
+        const API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_URL}/api/pdf/${fileId}/text-blocks`);
         if (!res.ok) throw new Error("Failed to fetch text blocks");
         
         const data = await res.json();
@@ -63,7 +64,8 @@ export default function EditorPage() {
     setIsProcessing(true);
     
     try {
-      const res = await fetch(`http://localhost:8000/api/pdf/${fileId}/update-text`, {
+      const API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/pdf/${fileId}/update-text`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ edits }),
@@ -96,7 +98,8 @@ export default function EditorPage() {
     }
     
     incrementDownloads();
-    window.open(`http://localhost:8000/api/pdf/${fileId}/download`, '_blank');
+    const API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+    window.open(`${API_URL}/api/pdf/${fileId}/download`, '_blank');
   };
 
   if (isLoading) {
@@ -126,7 +129,7 @@ export default function EditorPage() {
 
         {/* Main Canvas Area */}
         <div className="flex-1 overflow-auto p-8 flex justify-center items-start">
-          <PDFViewer url={`http://localhost:8000/api/pdf/${fileId}/download`} />
+          <PDFViewer url={`${process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000'}/api/pdf/${fileId}/download`} />
         </div>
       </div>
 

@@ -24,7 +24,8 @@ export default function DropZone() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:8000/api/pdf/upload", {
+      const API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_URL}/api/pdf/upload`, {
         method: "POST",
         body: formData,
       });
