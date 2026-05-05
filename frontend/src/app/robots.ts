@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/editor/', '/api/'],
     },
-    sitemap: 'https://pustakedits.com/sitemap.xml',
+    sitemap: 'https://pustakedit.vercel.app/sitemap.xml',
   };
 }

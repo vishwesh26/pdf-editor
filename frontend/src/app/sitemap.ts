@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://pustakedits.com';
+  const baseUrl = 'https://pustakedit.vercel.app';
 
   return [
     {
