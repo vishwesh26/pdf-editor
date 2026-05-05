@@ -24,7 +24,8 @@ export default function TextEditModal() {
       original_bbox: selectedBlock.bbox,
       font: selectedBlock.font,
       size: selectedBlock.size,
-      color: selectedBlock.color
+      color: selectedBlock.color,
+      flags: selectedBlock.flags
     });
 
     // Optimistically update the UI text block

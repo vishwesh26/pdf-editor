@@ -19,7 +19,7 @@ export default function Home() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
           </span>
-          PDFTextEdit Pro is Live
+          PustakEdits is Live
         </motion.div>
         
         <motion.h1 
@@ -70,7 +70,7 @@ export default function Home() {
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
             </div>
-            <div className="mx-auto text-xs text-muted-foreground font-medium">editor.pdftextedit.pro</div>
+            <div className="mx-auto text-xs text-muted-foreground font-medium">editor.pustakedits.com</div>
           </div>
           <div className="bg-white dark:bg-black aspect-[16/9] flex items-center justify-center p-8 relative overflow-hidden">
              {/* Fake PDF Editor UI for visual flair */}
@@ -131,7 +131,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row items-center gap-12">
                 <div className="flex-1">
-                    <h2 className="text-3xl font-bold mb-6">Why use PDFTextEdit Pro?</h2>
+                    <h2 className="text-3xl font-bold mb-6">Why use PustakEdits?</h2>
                     <ul className="space-y-4">
                         {[
                             "Actual text layer modification (no white box overlays)",

@@ -1,11 +1,10 @@
 "use client";
 
 import Link from 'next/link';
-import { Edit3 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
 export default function Navbar() {
-  const { user, isPro, signOut } = useAuthStore();
+  const { user, signOut } = useAuthStore();
   
   return (
     <nav className="sticky top-0 z-50 glass border-b border-white/20">
@@ -13,18 +12,17 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2">
-              <span className="font-bold text-xl tracking-tight">PDFTextEdit <span className="text-blue-600 dark:text-blue-400">Pro</span></span>
+              <span className="font-bold text-xl tracking-tight">Pustak<span className="text-blue-600 dark:text-blue-400">Edits</span></span>
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-            <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+            <Link href="/#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
             <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
           </div>
           {user ? (
             <div className="flex items-center gap-4">
               <span className="text-sm font-medium hidden md:inline-block">
-                {user.email} {isPro && <span className="text-xs bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full ml-1">PRO</span>}
+                {user.email}
               </span>
               <button 
                 onClick={() => signOut()}
@@ -39,7 +37,7 @@ export default function Navbar() {
                 Log in
               </Link>
               <Link href="/signup" className="text-sm font-medium px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform">
-                Sign up
+                Sign up free
               </Link>
             </div>
           )}

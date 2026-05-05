@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useEditorStore } from "@/store/editorStore";
-import { useAuthStore } from "@/store/authStore";
+
 import PDFViewer from "@/components/pdf/PDFViewer";
 import Toolbar from "@/components/pdf/Toolbar";
 import TextEditModal from "@/components/pdf/TextEditModal";
@@ -24,8 +24,6 @@ export default function EditorPage() {
     reset
   } = useEditorStore();
   
-  const { isPro, downloadsCount, incrementDownloads } = useAuthStore();
-
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch text blocks on load
@@ -91,13 +89,6 @@ export default function EditorPage() {
   };
 
   const handleDownload = () => {
-    if (!isPro && downloadsCount >= 2) {
-      toast.error("You've reached your free 2 downloads limit. Please upgrade to Pro.");
-      router.push('/pricing');
-      return;
-    }
-    
-    incrementDownloads();
     const API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
     window.open(`${API_URL}/api/pdf/${fileId}/download`, '_blank');
   };

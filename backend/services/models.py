@@ -9,6 +9,7 @@ class TextEdit(BaseModel):
     font: Optional[str] = "Helvetica"
     size: Optional[float] = 12.0
     color: Optional[str] = "#000000"
+    flags: Optional[int] = 0
 
 class UpdateTextRequest(BaseModel):
     edits: List[TextEdit]

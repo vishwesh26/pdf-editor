@@ -1,132 +1,98 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Zap, Infinity, Shield, Download } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { useAuthStore } from "@/store/authStore";
+import { motion } from "framer-motion";
 
-function RazorpayButton({ email }: { email: string }) {
-  const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    if (!formRef.current) return;
-    
-    // Check if script already exists to prevent duplicates in strict mode
-    if (formRef.current.querySelector('script')) return;
-
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-    script.setAttribute("data-payment_button_id", "pl_Sj0Y6lB8HRILVi");
-    if (email) script.setAttribute("data-prefill.email", email);
-    script.async = true;
-    formRef.current.appendChild(script);
-  }, [email]);
-
-  return (
-    <div className="flex justify-center w-full bg-white dark:bg-black rounded-xl p-2 min-h-[48px]">
-      <form ref={formRef}></form>
-    </div>
-  );
-}
+const features = [
+  "Unlimited PDF downloads",
+  "Unlimited file edits",
+  "Any file size supported",
+  "Actual text layer modification (no white box overlays)",
+  "Preserves original formatting and fonts",
+  "No watermarks on exported files",
+  "Secure processing — files auto-deleted after 24h",
+  "Blazing fast browser-based editor",
+];
 
 export default function PricingPage() {
-  const { user, isPro } = useAuthStore();
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-      <div className="text-center mb-16">
-        <h1 className="text-4xl font-extrabold mb-4">Simple, transparent pricing</h1>
-        <p className="text-xl text-muted-foreground">Start for free, upgrade when you need more power.</p>
-      </div>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center mb-16"
+      >
+        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm font-medium mb-6">
+          <Zap size={14} />
+          100% Free — No credit card required
+        </span>
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+          Everything is{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500">
+            completely free
+          </span>
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-xl mx-auto">
+          We believe powerful PDF editing should be accessible to everyone. No subscriptions, no paywalls, no limits.
+        </p>
+      </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        {/* Free Tier */}
-        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-8 border border-black/10 dark:border-white/10 shadow-lg relative">
-          <h2 className="text-2xl font-bold mb-2">Free</h2>
-          <div className="mb-6">
-            <span className="text-4xl font-extrabold">₹0</span>
-            <span className="text-muted-foreground">/month</span>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+        className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-3xl p-10 border border-green-200/50 dark:border-green-700/30 shadow-xl mb-12"
+      >
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
+            <Infinity className="text-white" size={28} />
           </div>
-          <p className="text-muted-foreground mb-6">Perfect for occasional edits.</p>
-          <ul className="space-y-4 mb-8">
-            <li className="flex items-center gap-3">
-              <CheckCircle2 className="text-green-500" size={20} />
-              <span>2 PDF downloads per day</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <CheckCircle2 className="text-green-500" size={20} />
-              <span>Max file size: 5MB</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <CheckCircle2 className="text-green-500" size={20} />
-              <span>Standard text replacement</span>
-            </li>
-          </ul>
-          {!user ? (
-            <Link href="/signup" className="block w-full py-3 px-4 bg-gray-100 dark:bg-zinc-800 text-center font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors">
-              Get Started Free
-            </Link>
-          ) : (
-            <button disabled className="block w-full py-3 px-4 bg-gray-100 dark:bg-zinc-800 text-center font-bold rounded-xl opacity-50 cursor-not-allowed">
-              Current Plan
-            </button>
-          )}
+          <div>
+            <h2 className="text-2xl font-bold">Full Access Plan</h2>
+            <p className="text-muted-foreground">Everything included, always</p>
+          </div>
+          <div className="ml-auto text-right">
+            <div className="text-5xl font-extrabold text-green-600 dark:text-green-400">Free</div>
+            <div className="text-muted-foreground text-sm">forever</div>
+          </div>
         </div>
 
-        {/* Pro Tier */}
-        <div className="bg-black dark:bg-white text-white dark:text-black rounded-3xl p-8 border border-black/10 dark:border-white/10 shadow-2xl relative transform md:-translate-y-4">
-          <div className="absolute top-0 right-8 transform -translate-y-1/2">
-            <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Most Popular</span>
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Pro</h2>
-          <div className="mb-6">
-            <span className="text-4xl font-extrabold">₹20</span>
-            <span className="text-white/70 dark:text-black/70">/month</span>
-          </div>
-          <p className="text-white/80 dark:text-black/80 mb-6">For professionals who edit regularly.</p>
-          <ul className="space-y-4 mb-8">
-            <li className="flex items-center gap-3">
-              <CheckCircle2 className="text-green-400 dark:text-green-600" size={20} />
-              <span>Unlimited PDF downloads</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <CheckCircle2 className="text-green-400 dark:text-green-600" size={20} />
-              <span>Max file size: 50MB</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <CheckCircle2 className="text-green-400 dark:text-green-600" size={20} />
-              <span>Priority processing</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <CheckCircle2 className="text-green-400 dark:text-green-600" size={20} />
-              <span>Priority support</span>
-            </li>
-          </ul>
-          
-          {isPro ? (
-            <button disabled className="block w-full py-3 px-4 bg-white dark:bg-black text-black dark:text-white text-center font-bold rounded-xl opacity-50 cursor-not-allowed">
-              Active Plan
-            </button>
-          ) : user ? (
-            <div className="flex flex-col gap-3">
-              <RazorpayButton email={user.email || ""} />
-              <button 
-                onClick={() => {
-                  useAuthStore.getState().setIsPro(true);
-                  alert("Pro unlocked! (This is a temporary bypass for testing since Webhooks are not set up yet)");
-                }}
-                className="text-xs text-white/50 hover:text-white/80 underline text-center"
-              >
-                Already paid? Sync Purchase (Dev Mode)
-              </button>
-            </div>
-          ) : (
-            <Link href="/login?redirect=/pricing" className="block w-full py-3 px-4 bg-white dark:bg-black text-black dark:text-white text-center font-bold rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors">
-              Log in to Upgrade
-            </Link>
-          )}
-        </div>
-      </div>
+        <ul className="grid sm:grid-cols-2 gap-4 mb-10">
+          {features.map((feature, i) => (
+            <motion.li
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 + i * 0.05 }}
+              className="flex items-center gap-3"
+            >
+              <CheckCircle2 className="text-green-500 shrink-0" size={20} />
+              <span className="text-sm font-medium">{feature}</span>
+            </motion.li>
+          ))}
+        </ul>
+
+        <Link
+          href="/dashboard"
+          className="block w-full py-4 text-center bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg rounded-2xl hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg"
+        >
+          Start Editing — It&apos;s Free
+        </Link>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="flex items-center justify-center gap-8 text-sm text-muted-foreground"
+      >
+        <span className="flex items-center gap-1.5"><Shield size={14} className="text-green-500" /> Secure & Private</span>
+        <span className="flex items-center gap-1.5"><Download size={14} className="text-blue-500" /> Unlimited Downloads</span>
+        <span className="flex items-center gap-1.5"><Zap size={14} className="text-amber-500" /> No Sign-up Required</span>
+      </motion.div>
     </div>
   );
 }
+

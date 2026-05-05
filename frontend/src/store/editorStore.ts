@@ -8,6 +8,7 @@ export type TextBlock = {
   font: string;
   size: number;
   color: string;
+  flags: number; // PyMuPDF font flags: bit 0 = superscript, bit 1 = italic, bit 2 = serif, bit 3 = monospaced, bit 4 = bold
 };
 
 export type Edit = {
@@ -18,6 +19,7 @@ export type Edit = {
   font: string;
   size: number;
   color: string;
+  flags: number;
 };
 
 interface EditorState {

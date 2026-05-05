@@ -14,7 +14,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="font-bold">User Account</p>
-              <p className="text-xs text-muted-foreground">Free Plan</p>
+              <p className="text-xs text-muted-foreground">Active</p>
             </div>
           </div>
           

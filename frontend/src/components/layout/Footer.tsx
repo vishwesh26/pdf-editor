@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="border-t border-black/5 dark:border-white/5 py-12 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-center md:text-left">
-          <p className="font-bold text-lg">PDFTextEdit Pro</p>
+          <p className="font-bold text-lg">Pustak<span className="text-blue-600 dark:text-blue-400">Edits</span></p>
           <p className="text-sm text-muted-foreground mt-1">© {new Date().getFullYear()} All rights reserved.</p>
         </div>
         <div className="flex space-x-6 text-sm text-muted-foreground">
@@ -17,3 +17,4 @@ export default function Footer() {
     </footer>
   );
 }
+

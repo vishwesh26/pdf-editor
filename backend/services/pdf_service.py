@@ -56,7 +56,41 @@ class PDFService:
         """Apply edits and return path to the new file."""
         doc = fitz.open(file_path)
         
-        # Group edits by page
+        # ── Step 1: Extract all embedded fonts from the PDF for reuse ──
+        # We do this BEFORE redacting so font data is still available.
+        # font_files maps cleaned_font_name -> temp_file_path
+        font_files = {}
+        temp_file_paths = []
+        seen_xrefs = set()
+        
+        for page_idx in range(len(doc)):
+            for font_info in doc[page_idx].get_fonts(full=True):
+                xref = font_info[0]
+                if xref <= 0 or xref in seen_xrefs:
+                    continue
+                seen_xrefs.add(xref)
+                
+                basefont = font_info[3]  # e.g. "ABCDEF+Calibri-Bold"
+                # Strip subset prefix (e.g. "ABCDEF+" → "Calibri-Bold")
+                clean_name = basefont.split("+")[-1] if "+" in basefont else basefont
+                
+                if clean_name in font_files:
+                    continue
+                
+                try:
+                    _, ext, _, content = doc.extract_font(xref)
+                    if content and ext in ("ttf", "otf", "ttc"):
+                        temp_path = os.path.join(
+                            UPLOAD_DIR, f"_tmpfont_{uuid.uuid4().hex}.{ext}"
+                        )
+                        with open(temp_path, "wb") as f:
+                            f.write(content)
+                        font_files[clean_name] = temp_path
+                        temp_file_paths.append(temp_path)
+                except Exception:
+                    pass
+        
+        # ── Step 2: Group edits by page ──
         edits_by_page = {}
         for edit in edits:
             page_num = edit["page"] - 1
@@ -69,49 +103,24 @@ class PDFService:
                 continue
             page = doc[page_num]
             
+            # ── Step 3: Redact old text ──
             for edit in page_edits:
-                # 1. Redact old text area
-                # Convert bbox back to fitz.Rect
                 bbox = edit["original_bbox"]
                 rect = fitz.Rect(bbox[0], bbox[1], bbox[2], bbox[3])
-                # Add slight padding to ensure it covers
                 rect = rect + (-1, -1, 1, 1)
-                
-                # Add redaction annotation without a white background fill
                 page.add_redact_annot(rect)
             
             # Apply all redactions on this page
-            # Set images=0 and graphics=0 to prevent PyMuPDF from erasing background colors and images underneath the text.
+            # images=0 and graphics=0 prevents erasing background colors/images
             page.apply_redactions(images=0, graphics=0)
             
+            # ── Step 4: Insert new text with original font ──
             for edit in page_edits:
-                # 2. Insert new text
                 bbox = edit["original_bbox"]
                 new_text = edit["text"]
-                font_name = edit.get("font", "helv")
+                font_name = edit.get("font", "Helvetica")
                 size = edit.get("size", 12)
-                
-                # Try to map font to built-in if possible, otherwise use helv
-                font_map = {
-                    "Times-Roman": "tiro",
-                    "Times-Bold": "tibo",
-                    "Times-Italic": "tiit",
-                    "Times-BoldItalic": "tibi",
-                    "Helvetica": "helv",
-                    "Helvetica-Bold": "hebo",
-                    "Helvetica-Oblique": "heob",
-                    "Helvetica-BoldOblique": "hebo",
-                    "Courier": "cour",
-                    "Courier-Bold": "cobo",
-                    "Courier-Oblique": "coob",
-                    "Courier-BoldOblique": "cobo"
-                }
-                
-                mapped_font = "helv" # Default
-                for k, v in font_map.items():
-                    if k.lower() in font_name.lower():
-                        mapped_font = v
-                        break
+                flags = edit.get("flags", 0)
                 
                 # Parse hex color to rgb tuple (0-1)
                 color_hex = edit.get("color", "#000000").lstrip("#")
@@ -123,24 +132,94 @@ class PDFService:
                 else:
                     color_rgb = (0, 0, 0)
                 
-                # Calculate insertion point (bottom left of original text)
-                # Note: y1 is bottom, y0 is top in PyMuPDF depending on coordinate system
-                # insert_text usually expects bottom-left
-                point = fitz.Point(bbox[0], bbox[3] - (size * 0.2)) # Slight baseline adjustment
+                # Baseline insertion point
+                point = fitz.Point(bbox[0], bbox[3] - (size * 0.2))
                 
-                page.insert_text(
-                    point,
-                    new_text,
-                    fontname=mapped_font,
-                    fontsize=size,
-                    color=color_rgb
-                )
+                # Try to find the original font in our extracted cache
+                clean_edit_font = font_name.split("+")[-1] if "+" in font_name else font_name
+                font_file = font_files.get(clean_edit_font)
+                
+                inserted = False
+                if font_file and os.path.exists(font_file):
+                    try:
+                        # Create a safe PDF reference name from the font name
+                        safe_ref = "".join(
+                            c for c in clean_edit_font if c.isalnum() or c in "-_"
+                        ) or "EmbeddedFont"
+                        
+                        page.insert_text(
+                            point,
+                            new_text,
+                            fontfile=font_file,
+                            fontname=safe_ref,
+                            fontsize=size,
+                            color=color_rgb,
+                        )
+                        inserted = True
+                    except Exception:
+                        pass  # Fall through to built-in font fallback
+                
+                if not inserted:
+                    # ── Fallback: built-in font with bold/italic detection ──
+                    is_bold = bool(flags & (1 << 4))
+                    is_italic = bool(flags & (1 << 1))
+                    font_lower = font_name.lower()
+                    
+                    if any(k in font_lower for k in ["courier", "mono", "consola"]):
+                        family = "courier"
+                    elif any(k in font_lower for k in ["times", "serif", "roman", "georgia"]):
+                        family = "times"
+                    else:
+                        family = "helvetica"
+                    
+                    if "bold" in font_lower or "heavy" in font_lower or "black" in font_lower:
+                        is_bold = True
+                    if "italic" in font_lower or "oblique" in font_lower:
+                        is_italic = True
+                    
+                    font_family_map = {
+                        "helvetica": {
+                            (False, False): "helv",
+                            (True,  False): "hebo",
+                            (False, True):  "heob",
+                            (True,  True):  "hebo",
+                        },
+                        "times": {
+                            (False, False): "tiro",
+                            (True,  False): "tibo",
+                            (False, True):  "tiit",
+                            (True,  True):  "tibi",
+                        },
+                        "courier": {
+                            (False, False): "cour",
+                            (True,  False): "cobo",
+                            (False, True):  "coob",
+                            (True,  True):  "cobo",
+                        },
+                    }
+                    
+                    mapped_font = font_family_map[family][(is_bold, is_italic)]
+                    
+                    page.insert_text(
+                        point,
+                        new_text,
+                        fontname=mapped_font,
+                        fontsize=size,
+                        color=color_rgb,
+                    )
                 
         # Save to new file
         new_filename = f"edited_{uuid.uuid4().hex}.pdf"
         output_path = os.path.join(UPLOAD_DIR, new_filename)
         doc.save(output_path, garbage=3, deflate=True)
         doc.close()
+        
+        # Cleanup temp font files
+        for temp_path in temp_file_paths:
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
         
         return output_path
 
