@@ -63,6 +63,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script id="aclib" strategy="beforeInteractive" src="//acscdn.com/script/aclib.js" />
+      </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <AuthProvider>
           <Navbar />
