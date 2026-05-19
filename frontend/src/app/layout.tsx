@@ -79,6 +79,13 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        <Script id="aclib-autotag" strategy="afterInteractive">
+          {`
+            aclib.runAutoTag({
+                zoneId: 'yvfxgolpsd',
+            });
+          `}
+        </Script>
       </body>
     </html>
   );
