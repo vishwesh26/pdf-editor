@@ -64,7 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+        <meta name="clckd" content="5884886bc63b225061a9b05de0b33996" />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <AuthProvider>
@@ -82,11 +82,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
-        <script type="text/javascript" dangerouslySetInnerHTML={{ __html: `
-    aclib.runAutoTag({
-        zoneId: 'yvfxgolpsd',
-    });
-` }}></script>
+
       </body>
     </html>
   );
