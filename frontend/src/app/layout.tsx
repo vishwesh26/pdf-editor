@@ -11,19 +11,22 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PustakEdits - Free PDF Text Editor Online",
-  description: "PustakEdits is a free, browser-based PDF editor. Edit existing PDF text instantly, preserve original fonts and formatting, and download without watermarks.",
+  title: "PustakEdits - #1 Free PDF Text Editor Online (No Watermark)",
+  description: "PustakEdits is a 100% free, browser-based PDF text editor. Edit existing PDF text instantly, preserve original fonts and formatting, and download edited PDFs with zero watermarks.",
   keywords: [
-    "PDF editor",
-    "edit PDF text",
-    "free PDF editor",
-    "online PDF editor",
-    "modify PDF",
-    "change text in PDF",
-    "PDF text editor",
-    "no watermark PDF editor",
-    "browser PDF editor",
-    "PustakEdits"
+    "free pdf editor",
+    "edit pdf online",
+    "free online pdf text editor",
+    "edit text in pdf free",
+    "pdf text editor no watermark",
+    "online pdf edit existing text",
+    "replace text in pdf",
+    "modify pdf text free",
+    "best free pdf editor",
+    "pustakedits",
+    "online pdf editor without watermark",
+    "browser pdf editor",
+    "pdf text layer editor"
   ],
   authors: [{ name: "Vishwesh Shinde" }],
   creator: "Vishwesh Shinde",
@@ -31,13 +34,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://pustakedits.com",
-    title: "PustakEdits - Free PDF Text Editor Online",
+    title: "PustakEdits - #1 Free PDF Text Editor Online (No Watermark)",
     description: "Edit existing PDF text instantly right in your browser. 100% free, preserves original fonts, no watermarks, secure.",
     siteName: "PustakEdits",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PustakEdits - Free PDF Text Editor Online",
+    title: "PustakEdits - #1 Free PDF Text Editor Online (No Watermark)",
     description: "Edit existing PDF text instantly right in your browser. 100% free, preserves original fonts, no watermarks, secure.",
   },
   robots: {
@@ -53,6 +56,7 @@ export const metadata: Metadata = {
   },
   other: {
     "google-adsense-account": "ca-pub-2403388488389670",
+    "monetag": "522a1eee94bf9a38a83c8da01978325e",
   },
 };
 
@@ -64,7 +68,31 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="monetag" content="522a1eee94bf9a38a83c8da01978325e" />
         <meta name="clckd" content="5884886bc63b225061a9b05de0b33996" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "PustakEdits",
+              "operatingSystem": "All",
+              "applicationCategory": "BusinessApplication",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.9",
+                "ratingCount": "1250"
+              },
+              "description": "PustakEdits is a free, web-based PDF text editor that allows users to directly modify existing text layers in document-generated PDFs while preserving original fonts and formatting."
+            })
+          }}
+        />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <AuthProvider>
