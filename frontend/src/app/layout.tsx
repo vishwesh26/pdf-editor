@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://pustakedits.com",
+    url: "https://pustakedit.vercel.app",
     title: "PustakEdits - #1 Free PDF Text Editor Online (No Watermark)",
     description: "Edit existing PDF text instantly right in your browser. 100% free, preserves original fonts, no watermarks, secure.",
     siteName: "PustakEdits",
@@ -68,6 +68,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script src="https://quge5.com/88/tag.min.js" data-zone="264735" async data-cfasync="false"></script>
         <meta name="monetag" content="522a1eee94bf9a38a83c8da01978325e" />
         <meta name="clckd" content="5884886bc63b225061a9b05de0b33996" />
         <script
