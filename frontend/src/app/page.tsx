@@ -90,7 +90,13 @@ export default function Home() {
         id="demo"
         className="w-full py-16 sm:py-20 bg-transparent"
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"
+        >
           <div className="text-center mb-10">
             <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
               Watch it work
@@ -101,12 +107,18 @@ export default function Home() {
           </div>
 
           <AnimatedPdfDemo />
-        </div>
+        </motion.div>
       </section>
 
       {/* ─── HOW IT'S DIFFERENT ─── */}
       <section className="w-full py-16 sm:py-20 border-t border-white/10 bg-transparent">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+        >
           <div className="text-center mb-10">
             <h2 className="text-xl sm:text-2xl font-bold text-white">
               Why PustakEdits is different
@@ -163,12 +175,18 @@ export default function Home() {
               </div>
             </div>
           </SpotlightCard>
-        </div>
+        </motion.div>
       </section>
 
       {/* ─── FAQ + CTA ─── */}
       <section className="w-full py-16 sm:py-20 border-t border-white/10 bg-transparent">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8"
+        >
           <div className="text-center mb-10">
             <h2 className="text-xl sm:text-2xl font-bold text-white">
               Common questions
@@ -230,7 +248,7 @@ export default function Home() {
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );
