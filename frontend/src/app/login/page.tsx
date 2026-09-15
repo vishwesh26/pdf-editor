@@ -3,24 +3,26 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FileText, Loader2 } from "lucide-react";
+import { FileEdit, Loader2, Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/dashboard';
-  
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return toast.error("Please enter email and password");
-    
+    if (!email || !password) return toast.error("Please enter both email and password");
+
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -29,11 +31,15 @@ function LoginContent() {
       });
 
       if (error) throw error;
-      
-      toast.success("Successfully logged in!");
+
+      toast.success("Welcome back!");
       router.push(redirectTo);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to log in");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to log in");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -43,80 +49,117 @@ function LoginContent() {
     setIsGoogleLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}${redirectTo}`,
-        }
+        },
       });
       if (error) throw error;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to log in with Google");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to authenticate with Google");
+      }
       setIsGoogleLoading(false);
     }
   };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 p-8 rounded-2xl shadow-xl border border-black/10 dark:border-white/10">
-        <div className="flex justify-center mb-6">
-          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
-            <FileText size={24} />
+      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950/80 p-8 sm:p-10 shadow-2xl backdrop-blur-2xl">
+        {/* Brand Header */}
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="h-12 w-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white mb-4 shadow-sm">
+            <FileEdit className="h-6 w-6 text-white" />
           </div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Welcome Back</h1>
+          <p className="text-xs text-zinc-400 mt-1">
+            Log in to manage your edited PDF files &amp; workspace
+          </p>
         </div>
-        <h1 className="text-2xl font-bold text-center mb-2">Welcome back</h1>
-        <p className="text-center text-muted-foreground mb-8">Sign in to your account to continue</p>
 
+        {/* Form */}
         <form onSubmit={handleEmailLogin} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-            <input 
-              type="email" 
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-shadow" 
-              placeholder="you@example.com" 
-            />
-          </div>
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label htmlFor="password" className="block text-sm font-medium">Password</label>
-              <Link href="#" className="text-xs text-blue-600 dark:text-blue-400 hover:underline">Forgot password?</Link>
+            <label htmlFor="email" className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-zinc-900 border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:border-white/40 outline-none transition-all"
+                placeholder="you@example.com"
+                required
+              />
             </div>
-            <input 
-              type="password" 
-              id="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-shadow" 
-              placeholder="••••••••" 
-            />
           </div>
-          <button 
-            type="submit" 
+
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <label htmlFor="password" className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Password
+              </label>
+              <Link href="#" className="text-xs text-zinc-400 hover:text-white transition-colors">
+                Forgot?
+              </Link>
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-10 pr-10 py-2.5 bg-zinc-900 border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:border-white/40 outline-none transition-all"
+                placeholder="••••••••"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-3 text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
             disabled={isLoading || isGoogleLoading}
-            className="w-full py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold hover:opacity-90 transition-opacity mt-4 flex items-center justify-center gap-2 disabled:opacity-50"
+            variant="white"
+            size="lg"
+            className="w-full justify-center text-sm font-semibold gap-2 mt-2"
           >
-            {isLoading && <Loader2 size={18} className="animate-spin" />}
-            Sign In with Email
-          </button>
+            {isLoading && <Loader2 size={16} className="animate-spin text-black" />}
+            <span>Sign In with Email</span>
+          </Button>
         </form>
 
+        {/* Divider */}
         <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-gray-200 dark:border-zinc-800"></div>
-          <span className="px-3 text-xs text-muted-foreground uppercase bg-white dark:bg-zinc-900">Or continue with</span>
-          <div className="flex-1 border-t border-gray-200 dark:border-zinc-800"></div>
+          <div className="flex-1 border-t border-white/10"></div>
+          <span className="px-3 text-[11px] text-zinc-500 uppercase tracking-wider font-mono">
+            or continue with
+          </span>
+          <div className="flex-1 border-t border-white/10"></div>
         </div>
 
-        <button 
+        {/* Google OAuth Button */}
+        <button
           onClick={handleGoogleLogin}
           disabled={isLoading || isGoogleLoading}
-          className="w-full py-3 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-foreground rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-zinc-800/80 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-white rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 shadow-sm"
         >
           {isGoogleLoading ? (
-            <Loader2 size={18} className="animate-spin" />
+            <Loader2 size={16} className="animate-spin text-zinc-400" />
           ) : (
-            <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
               <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
                 <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
                 <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
@@ -125,16 +168,18 @@ function LoginContent() {
               </g>
             </svg>
           )}
-          Google
+          <span>Continue with Google</span>
         </button>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link href={`/signup${redirectTo !== '/dashboard' ? `?redirect=${redirectTo}` : ''}`} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              Sign up
-            </Link>
-          </p>
+        {/* Footer Link */}
+        <div className="mt-8 text-center text-xs text-zinc-400">
+          Don&apos;t have an account?{" "}
+          <Link
+            href={`/signup${redirectTo !== "/dashboard" ? `?redirect=${redirectTo}` : ""}`}
+            className="text-white hover:underline font-semibold"
+          >
+            Create one free
+          </Link>
         </div>
       </div>
     </div>
@@ -143,7 +188,13 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-[80vh] flex items-center justify-center"><Loader2 className="animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-[80vh] flex items-center justify-center">
+          <Loader2 className="animate-spin text-blue-400" />
+        </div>
+      }
+    >
       <LoginContent />
     </Suspense>
   );

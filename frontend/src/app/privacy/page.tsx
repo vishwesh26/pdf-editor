@@ -1,149 +1,178 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { ShieldCheck, Clock, Lock, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const LAST_UPDATED = "May 5, 2025";
 const CONTACT_EMAIL = "Vishweshshinde26@gmail.com";
 const BRAND = "PustakEdits";
 
+const SECTIONS = [
+  { id: "intro", title: "1. Introduction" },
+  { id: "collection", title: "2. Information We Collect" },
+  { id: "usage", title: "3. How We Use Information" },
+  { id: "storage", title: "4. File Storage & 24h Purge" },
+  { id: "cookies", title: "5. Cookies & Data Storage" },
+  { id: "thirdparty", title: "6. Third-Party Services" },
+  { id: "rights", title: "7. Your Rights" },
+  { id: "changes", title: "8. Policy Changes" },
+  { id: "contact", title: "9. Contact Information" },
+];
+
 export default function PrivacyPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-12"
+        transition={{ duration: 0.4 }}
+        className="mb-12 text-center max-w-2xl mx-auto"
       >
-        <h1 className="text-4xl font-extrabold mb-3">Privacy Policy</h1>
-        <p className="text-sm text-muted-foreground">Last updated: {LAST_UPDATED}</p>
+        <span className="text-xs font-medium uppercase tracking-widest text-zinc-300 bg-white/5 border border-white/10 px-3.5 py-1 rounded-full">
+          Data Confidentiality
+        </span>
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-3 mb-2">
+          Privacy Policy
+        </h1>
+        <p className="text-xs text-zinc-400">Last updated: {LAST_UPDATED}</p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="prose prose-zinc dark:prose-invert max-w-none space-y-10"
-      >
-        <section>
-          <h2 className="text-2xl font-bold mb-3">1. Introduction</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Welcome to <strong>{BRAND}</strong>. We respect your privacy and are committed to protecting
-            any personal data you share with us. This Privacy Policy explains what information we collect,
-            how we use it, and what rights you have regarding your data.
+      {/* Security Callouts Grid */}
+      <div className="grid sm:grid-cols-3 gap-4 mb-16">
+        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-5 backdrop-blur-xl">
+          <Clock size={20} className="text-zinc-300 mb-2" />
+          <h4 className="text-sm font-bold text-white mb-1">24-Hour Auto-Purge</h4>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            All uploaded PDFs and edits are permanently purged from processing servers within 24 hours.
           </p>
-        </section>
+        </div>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">2. Information We Collect</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed">
-            <li>
-              <strong>Account information</strong> — email address when you sign up or log in via Google OAuth.
-            </li>
-            <li>
-              <strong>Uploaded PDF files</strong> — files you upload for editing. These are stored temporarily
-              and <strong>automatically deleted after 24 hours</strong>.
-            </li>
-            <li>
-              <strong>Usage data</strong> — basic analytics such as pages visited and features used, collected
-              anonymously to improve the service.
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-3">3. How We Use Your Information</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed">
-            <li>To provide and operate the PDF editing service.</li>
-            <li>To authenticate you and maintain your session securely.</li>
-            <li>To improve site functionality and user experience.</li>
-            <li>To respond to your queries or support requests.</li>
-          </ul>
-          <p className="text-muted-foreground leading-relaxed mt-3">
-            We <strong>do not</strong> sell, rent, or share your personal data with third parties for
-            marketing purposes.
+        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-5 backdrop-blur-xl">
+          <Lock size={20} className="text-zinc-300 mb-2" />
+          <h4 className="text-sm font-bold text-white mb-1">Zero AI Training</h4>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            We never inspect, harvest, or train AI models on your private documents.
           </p>
-        </section>
+        </div>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">4. File Storage & Security</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Uploaded PDF files are stored on secure servers solely for the purpose of processing your edits.
-            All files are <strong>automatically purged within 24 hours</strong> of upload. We use
-            industry-standard encryption (HTTPS/TLS) for all data in transit.
+        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-5 backdrop-blur-xl">
+          <ShieldCheck size={20} className="text-zinc-300 mb-2" />
+          <h4 className="text-sm font-bold text-white mb-1">Encrypted in Transit</h4>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            All data transferred between your browser and the vector engine uses TLS 1.3 encryption.
           </p>
-        </section>
+        </div>
+      </div>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">5. Cookies and Advertising</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            We use essential cookies required for authentication and session management. Additionally, we use third-party vendors, including Google AdSense, to serve ads on our site.
-          </p>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed mt-3">
-            <li>
-              Google uses cookies to serve ads based on a user&apos;s prior visits to your website or other websites.
-            </li>
-            <li>
-              Google&apos;s use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet.
-            </li>
-            <li>
-              You may opt out of personalized advertising by visiting <a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline">Google Ads Settings</a>.
-            </li>
-          </ul>
-        </section>
+      {/* Content Layout */}
+      <div className="flex flex-col lg:flex-row gap-10">
+        {/* Table of Contents Sticky Sidebar */}
+        <aside className="w-full lg:w-64 shrink-0">
+          <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-5 sticky top-24 backdrop-blur-xl">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">
+              On This Page
+            </h4>
+            <nav className="space-y-1 text-xs">
+              {SECTIONS.map((sec) => (
+                <a
+                  key={sec.id}
+                  href={`#${sec.id}`}
+                  className="block py-1 text-zinc-400 hover:text-white transition-colors truncate"
+                >
+                  {sec.title}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </aside>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">6. Third-Party Services</h2>
-          <p className="text-muted-foreground leading-relaxed mb-3">
-            We rely on certain trusted third-party services to operate {BRAND}:
-          </p>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed">
-            <li>
-              <strong>Supabase</strong>: Used for authentication and database storage. Their practices are governed by the <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline">Supabase Privacy Policy</a>.
-            </li>
-            <li>
-              <strong>Google AdSense</strong>: Used to display advertisements. AdSense uses cookies to personalize ads. Their practices are governed by the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline">Google Privacy Policy</a>.
-            </li>
-          </ul>
-        </section>
+        {/* Policy Body */}
+        <div className="flex-1 space-y-10 text-sm text-zinc-300 leading-relaxed">
+          <section id="intro" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">1. Introduction</h2>
+            <p className="text-zinc-400 leading-relaxed">
+              Welcome to <strong>{BRAND}</strong>. We respect your privacy and are committed to protecting
+              any personal information or documents you interact with on our platform. This Privacy Policy
+              explains what information is processed, how it is handled, and your rights.
+            </p>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">7. Your Rights</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed">
-            <li>Access or correct the personal information we hold about you.</li>
-            <li>Request deletion of your account and associated data.</li>
-            <li>Withdraw consent at any time by deleting your account.</li>
-          </ul>
-          <p className="text-muted-foreground leading-relaxed mt-3">
-            To exercise any of these rights, please contact us at{" "}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 dark:text-blue-400 underline">
-              {CONTACT_EMAIL}
-            </a>
-            .
-          </p>
-        </section>
+          <section id="collection" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">2. Information We Collect</h2>
+            <ul className="list-disc list-inside space-y-2 text-zinc-400 leading-relaxed">
+              <li>
+                <strong>Account Information:</strong> Email address when creating an account or logging in via Google OAuth.
+              </li>
+              <li>
+                <strong>Uploaded PDF Documents:</strong> Files you upload for editing. Stored temporarily and automatically deleted after 24 hours.
+              </li>
+              <li>
+                <strong>Technical Diagnostics:</strong> Anonymous browser telemetry to measure editor performance and fix layout rendering bugs.
+              </li>
+            </ul>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">8. Changes to This Policy</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            We may update this Privacy Policy from time to time. Any changes will be posted on this page
-            with an updated &quot;Last updated&quot; date. Continued use of {BRAND} after changes constitutes
-            your acceptance of the new policy.
-          </p>
-        </section>
+          <section id="usage" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">3. How We Use Your Information</h2>
+            <p className="text-zinc-400 leading-relaxed mb-3">
+              Information is processed exclusively to deliver the PDF text editing service, authenticate sessions, and protect against automated abuse.
+            </p>
+            <p className="text-zinc-400 leading-relaxed">
+              We <strong>do not</strong> sell, monetize, rent, or distribute your private documents or data to third parties.
+            </p>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">9. Contact</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            If you have any questions about this Privacy Policy, please reach out to{" "}
-            <strong>Vishwesh Shinde</strong> at{" "}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 dark:text-blue-400 underline">
-              {CONTACT_EMAIL}
-            </a>
-            .
-          </p>
-        </section>
-      </motion.div>
+          <section id="storage" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">4. File Storage &amp; 24h Purge Policy</h2>
+            <p className="text-zinc-400 leading-relaxed">
+              Uploaded PDF documents are stored in secure ephemeral containers strictly to generate text blocks and apply your vector redactions. All uploaded and exported files are permanently purged within 24 hours.
+            </p>
+          </section>
+
+          <section id="cookies" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">5. Cookies &amp; Data Storage</h2>
+            <p className="text-zinc-400 leading-relaxed mb-3">
+              We use strictly essential local storage and session tokens to remember your login status and editor state.
+            </p>
+            <p className="text-zinc-400 leading-relaxed">
+              We do not use third-party advertising cookies, ad tracking pixels, or cross-site tracking scripts.
+            </p>
+          </section>
+
+          <section id="thirdparty" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">6. Third-Party Services</h2>
+            <ul className="list-disc list-inside space-y-2 text-zinc-400">
+              <li><strong>Supabase:</strong> For identity authentication, user management, and secure sessions.</li>
+            </ul>
+          </section>
+
+          <section id="rights" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">7. Your Rights</h2>
+            <p className="text-zinc-400 leading-relaxed">
+              You have the right to request access to or deletion of your account and related credentials at any time by emailing us at{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-white underline hover:text-zinc-300">
+                {CONTACT_EMAIL}
+              </a>.
+            </p>
+          </section>
+
+          <section id="contact" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">8. Contact Information</h2>
+            <p className="text-zinc-400 leading-relaxed mb-4">
+              For any privacy inquiries or data requests, please contact <strong>Vishwesh Shinde</strong>:
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black hover:bg-zinc-200 font-semibold text-xs transition-colors"
+            >
+              <span>Contact Support</span>
+              <ArrowRight size={14} />
+            </Link>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

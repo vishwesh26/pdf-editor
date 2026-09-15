@@ -1,5 +1,17 @@
-import { ZoomIn, ZoomOut, Save, Download, ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
+"use client";
+
+import {
+  ZoomIn,
+  ZoomOut,
+  Save,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  FileEdit,
+} from "lucide-react";
 import { useEditorStore } from "@/store/editorStore";
+import { Button } from "@/components/ui/button";
 
 interface ToolbarProps {
   onSave: () => void;
@@ -7,78 +19,131 @@ interface ToolbarProps {
 }
 
 export default function Toolbar({ onSave, onDownload }: ToolbarProps) {
-  const { 
-    currentPage, 
-    numPages, 
-    setCurrentPage, 
-    zoom, 
+  const {
+    currentPage,
+    numPages,
+    setCurrentPage,
+    zoom,
     setZoom,
     isProcessing,
-    edits
+    edits,
   } = useEditorStore();
 
   const handleZoomIn = () => setZoom(Math.min(zoom + 0.25, 3));
   const handleZoomOut = () => setZoom(Math.max(zoom - 0.25, 0.5));
+  const handleFitPage = () => setZoom(1.0);
 
   return (
-    <div className="h-14 border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-between px-4 sticky top-0 z-10">
-      <div className="flex items-center gap-4">
-        {/* Pagination */}
-        <div className="flex items-center gap-1 sm:gap-2 bg-gray-100 dark:bg-zinc-900 rounded-md p-1">
-          <button 
+    <div className="h-16 border-b border-white/10 bg-zinc-950/90 backdrop-blur-xl flex items-center justify-between px-3 sm:px-6 sticky top-0 z-30 shadow-md">
+      {/* Left: Document indicator & Pagination */}
+      <div className="flex items-center gap-2 sm:gap-4">
+        {/* Document breadcrumb icon */}
+        <div className="hidden lg:flex items-center gap-2 pr-4 border-r border-white/10 text-xs text-zinc-300 font-medium">
+          <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center text-white">
+            <FileEdit size={14} />
+          </div>
+          <span>Active PDF</span>
+        </div>
+
+        {/* Pagination controls */}
+        <div className="flex items-center gap-1 bg-zinc-900/90 border border-white/10 rounded-xl p-1 shadow-inner">
+          <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage <= 1}
-            className="p-1 rounded hover:bg-white dark:hover:bg-zinc-800 disabled:opacity-50"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            title="Previous Page"
           >
-            <ChevronLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
+            <ChevronLeft size={16} />
           </button>
-          <span className="text-xs sm:text-sm font-medium w-10 sm:w-16 text-center">
-            {currentPage} / {numPages}
-          </span>
-          <button 
+
+          <div className="px-2 text-xs font-semibold text-white tracking-wide flex items-center gap-1">
+            <span>{currentPage}</span>
+            <span className="text-zinc-500">/</span>
+            <span className="text-zinc-400">{Math.max(1, numPages)}</span>
+          </div>
+
+          <button
             onClick={() => setCurrentPage(Math.min(numPages, currentPage + 1))}
             disabled={currentPage >= numPages}
-            className="p-1 rounded hover:bg-white dark:hover:bg-zinc-800 disabled:opacity-50"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            title="Next Page"
           >
-            <ChevronRight size={16} className="sm:w-[18px] sm:h-[18px]" />
+            <ChevronRight size={16} />
           </button>
         </div>
 
-        <div className="w-px h-6 bg-gray-300 dark:bg-zinc-700 mx-1 sm:mx-2 hidden sm:block"></div>
-
-        {/* Zoom */}
-        <div className="flex items-center gap-1 sm:gap-2">
-          <button onClick={handleZoomOut} className="p-1 sm:p-1.5 rounded hover:bg-gray-100 dark:hover:bg-zinc-900">
-            <ZoomOut size={16} className="sm:w-[18px] sm:h-[18px]" />
+        {/* Zoom Controls */}
+        <div className="flex items-center gap-1 bg-zinc-900/90 border border-white/10 rounded-xl p-1 shadow-inner">
+          <button
+            onClick={handleZoomOut}
+            disabled={zoom <= 0.5}
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            title="Zoom Out"
+          >
+            <ZoomOut size={16} />
           </button>
-          <span className="text-xs sm:text-sm font-medium w-8 sm:w-12 text-center">{Math.round(zoom * 100)}%</span>
-          <button onClick={handleZoomIn} className="p-1 sm:p-1.5 rounded hover:bg-gray-100 dark:hover:bg-zinc-900">
-            <ZoomIn size={16} className="sm:w-[18px] sm:h-[18px]" />
+
+          <button
+            onClick={handleFitPage}
+            className="px-2 text-xs font-mono font-semibold text-zinc-300 hover:text-white transition-colors"
+            title="Reset Zoom to 100%"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+
+          <button
+            onClick={handleZoomIn}
+            disabled={zoom >= 3.0}
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            title="Zoom In"
+          >
+            <ZoomIn size={16} />
           </button>
         </div>
       </div>
 
+      {/* Right: Edits Counter & Actions */}
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="hidden md:block text-sm text-muted-foreground mr-2">
-          {edits.length} unsaved edits
-        </div>
-        
-        <button 
+        {/* Unsaved Edits Badge */}
+        {edits.length > 0 ? (
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            <span>
+              {edits.length} Unsaved {edits.length === 1 ? "Edit" : "Edits"}
+            </span>
+          </div>
+        ) : (
+          <div className="hidden md:flex items-center gap-1.5 text-xs text-zinc-500 mr-2">
+            <span>Click any text to edit</span>
+          </div>
+        )}
+
+        {/* Apply & Save Edits Button */}
+        <Button
           onClick={onSave}
           disabled={isProcessing || edits.length === 0}
-          className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium text-xs sm:text-sm transition-colors disabled:opacity-50"
+          variant="white"
+          size="sm"
+          className="gap-2 text-xs font-semibold px-4 disabled:opacity-30"
         >
-          {isProcessing ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-          <span className="hidden sm:inline">Apply</span>
-        </button>
-        
-        <button 
+          {isProcessing ? (
+            <Loader2 size={14} className="animate-spin text-black" />
+          ) : (
+            <Save size={14} />
+          )}
+          <span>Apply Edits</span>
+        </Button>
+
+        {/* Download Button */}
+        <Button
           onClick={onDownload}
-          className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 bg-black dark:bg-white text-white dark:text-black rounded-md font-medium text-xs sm:text-sm transition-colors"
+          variant="outline"
+          size="sm"
+          className="gap-1.5 text-xs font-semibold px-4 border-white/15 text-white hover:bg-white/10"
         >
-          <Download size={16} />
+          <Download size={14} />
           <span className="hidden sm:inline">Download</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "@/components/auth/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
+import { GridPulse } from "@/components/ui/grid-pulse";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -54,10 +54,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  other: {
-    "google-adsense-account": "ca-pub-2403388488389670",
-    "monetag": "522a1eee94bf9a38a83c8da01978325e",
-  },
 };
 
 export default function RootLayout({
@@ -66,11 +62,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
-        <script src="https://quge5.com/88/tag.min.js" data-zone="264735" async data-cfasync="false"></script>
-        <meta name="monetag" content="522a1eee94bf9a38a83c8da01978325e" />
-        <meta name="clckd" content="5884886bc63b225061a9b05de0b33996" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -95,23 +88,38 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen flex flex-col`}>
+      <body className={`${inter.className} min-h-screen flex flex-col bg-[#09090b] text-zinc-100 selection:bg-zinc-800 selection:text-white`}>
+        {/* Minimalist GridPulse Background */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute inset-0 bg-[#09090b]" />
+          <GridPulse cell={24} reach={2.6} ambient={2} maxLit={180} />
+        </div>
+
         <AuthProvider>
-          <Navbar />
-          <main className="flex-1 flex flex-col">
-            {children}
-          </main>
-          <Footer />
-          <Toaster position="bottom-right" />
+          <div className="relative z-10 flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1 flex flex-col">
+              {children}
+            </main>
+            <Footer />
+          </div>
+          <Toaster 
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: 'rgba(18, 18, 24, 0.95)',
+                color: '#fff',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                backdropFilter: 'blur(16px)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)',
+                fontSize: '13px',
+                fontWeight: '500',
+              },
+            }}
+          />
         </AuthProvider>
         <Analytics />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2403388488389670"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-
       </body>
     </html>
   );

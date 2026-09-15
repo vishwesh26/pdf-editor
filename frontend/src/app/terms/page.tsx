@@ -1,149 +1,131 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { ShieldCheck, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const LAST_UPDATED = "May 5, 2025";
 const CONTACT_EMAIL = "Vishweshshinde26@gmail.com";
 const BRAND = "PustakEdits";
 
+const SECTIONS = [
+  { id: "acceptance", title: "1. Acceptance of Terms" },
+  { id: "description", title: "2. Description of Service" },
+  { id: "accounts", title: "3. User Accounts" },
+  { id: "acceptable-use", title: "4. Acceptable Use Policy" },
+  { id: "handling", title: "5. Document Handling & Ownership" },
+  { id: "ip", title: "6. Intellectual Property" },
+  { id: "disclaimer", title: "7. Disclaimer of Warranties" },
+  { id: "liability", title: "8. Limitation of Liability" },
+  { id: "governing", title: "9. Governing Law" },
+  { id: "contact", title: "10. Contact Information" },
+];
+
 export default function TermsPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-12"
+        transition={{ duration: 0.4 }}
+        className="mb-12 text-center max-w-2xl mx-auto"
       >
-        <h1 className="text-4xl font-extrabold mb-3">Terms &amp; Conditions</h1>
-        <p className="text-sm text-muted-foreground">Last updated: {LAST_UPDATED}</p>
+        <span className="text-xs font-medium uppercase tracking-widest text-zinc-300 bg-white/5 border border-white/10 px-3.5 py-1 rounded-full">
+          Legal Agreement
+        </span>
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-3 mb-2">
+          Terms &amp; Conditions
+        </h1>
+        <p className="text-xs text-zinc-400">Last updated: {LAST_UPDATED}</p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="prose prose-zinc dark:prose-invert max-w-none space-y-10"
-      >
-        <section>
-          <h2 className="text-2xl font-bold mb-3">1. Acceptance of Terms</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            By accessing or using <strong>{BRAND}</strong> (&quot;the Service&quot;), you agree to be bound
-            by these Terms &amp; Conditions. If you do not agree with any part of these terms, you may not
-            use the Service.
-          </p>
-        </section>
+      {/* Content Layout */}
+      <div className="flex flex-col lg:flex-row gap-10">
+        {/* Table of Contents Sticky Sidebar */}
+        <aside className="w-full lg:w-64 shrink-0">
+          <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-5 sticky top-24 backdrop-blur-xl">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">
+              Sections
+            </h4>
+            <nav className="space-y-1 text-xs">
+              {SECTIONS.map((sec) => (
+                <a
+                  key={sec.id}
+                  href={`#${sec.id}`}
+                  className="block py-1 text-zinc-400 hover:text-white transition-colors truncate"
+                >
+                  {sec.title}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </aside>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">2. Description of Service</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            {BRAND} is a free, browser-based PDF editing tool that allows users to modify the text layer of
-            document-generated PDFs. The Service is provided &quot;as is&quot; and is free of charge with no
-            subscription required.
-          </p>
-        </section>
+        {/* Terms Body */}
+        <div className="flex-1 space-y-8 text-sm text-zinc-300 leading-relaxed">
+          <section id="acceptance" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">1. Acceptance of Terms</h2>
+            <p className="text-zinc-400 leading-relaxed">
+              By accessing or utilizing <strong>{BRAND}</strong> (&ldquo;the Service&rdquo;), you acknowledge and agree to be bound by these Terms &amp; Conditions. If you do not agree with any portion of these terms, you must refrain from using the Service.
+            </p>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">3. User Accounts</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed">
-            <li>You must provide accurate information when creating an account.</li>
-            <li>You are responsible for maintaining the security of your account credentials.</li>
-            <li>
-              You must be at least 13 years of age (or the minimum digital age of consent in your
-              jurisdiction) to use this Service.
-            </li>
-          </ul>
-        </section>
+          <section id="description" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">2. Description of Service</h2>
+            <p className="text-zinc-400 leading-relaxed">
+              {BRAND} is a browser-based PDF editing platform that enables users to manipulate authentic text layers in document-generated PDFs. The Service is provided free of charge with no subscription requirements.
+            </p>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">4. Acceptable Use</h2>
-          <p className="text-muted-foreground leading-relaxed mb-3">
-            You agree to use {BRAND} only for lawful purposes. You must not:
-          </p>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed">
-            <li>Upload or edit documents that contain illegal, fraudulent, or harmful content.</li>
-            <li>
-              Use the Service to forge, falsify, or fraudulently modify official documents (e.g. government
-              IDs, legal contracts, financial records) with intent to deceive.
-            </li>
-            <li>Attempt to reverse-engineer, hack, or disrupt the Service.</li>
-            <li>Use automated bots or scrapers to interact with the Service without prior consent.</li>
-          </ul>
-        </section>
+          <section id="acceptable-use" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">3. Acceptable Use Policy</h2>
+            <p className="text-zinc-400 leading-relaxed mb-3">
+              You agree to use {BRAND} exclusively for lawful and legitimate purposes. You explicitly agree not to:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-zinc-400">
+              <li>Upload or manipulate documents to forge or falsify official government, medical, or financial records with fraudulent intent.</li>
+              <li>Attempt to reverse engineer, disrupt, or launch denial-of-service attacks on our processing servers.</li>
+              <li>Deploy unauthorized scrapers, automated spiders, or extract confidential server resources.</li>
+            </ul>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">5. File Handling</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            All uploaded PDF files are processed securely and <strong>automatically deleted within 24 hours</strong>.
-            You retain full ownership of any documents you upload. By uploading a file, you grant {BRAND} a
-            temporary, limited licence to process the file solely for the purpose of providing the editing
-            service.
-          </p>
-        </section>
+          <section id="handling" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">4. Document Handling &amp; Ownership</h2>
+            <p className="text-zinc-400 leading-relaxed mb-3">
+              You retain 100% full intellectual property ownership of any files you upload. By uploading documents, you grant {BRAND} a temporary technical license strictly to process your redactions and render page canvases.
+            </p>
+            <div className="p-4 rounded-2xl bg-zinc-900 border border-white/10 text-xs text-zinc-400 flex items-center gap-3">
+              <ShieldCheck size={20} className="text-zinc-300 shrink-0" />
+              <span>All documents are automatically purged from our servers within 24 hours of upload.</span>
+            </div>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">6. Intellectual Property</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            The {BRAND} name, logo, and interface design are the intellectual property of Vishwesh Shinde.
-            You may not copy, reproduce, or redistribute any part of the interface without explicit written
-            permission.
-          </p>
-        </section>
+          <section id="disclaimer" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">5. Disclaimer of Warranties</h2>
+            <p className="text-zinc-400 leading-relaxed">
+              The Service is provided on an &ldquo;as-is&rdquo; and &ldquo;as-available&rdquo; basis without warranties of any kind. While we utilize cutting-edge vector extraction libraries, we do not guarantee that all proprietary or encrypted PDF formats will render identically.
+            </p>
+          </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-3">7. Disclaimer of Warranties</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            The Service is provided <strong>&quot;as is&quot;</strong> without warranty of any kind — express or
-            implied. We do not warrant that the Service will be uninterrupted, error-free, or produce
-            perfectly accurate results for all PDF files. Use the Service at your own discretion.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-3">8. Limitation of Liability</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            To the maximum extent permitted by applicable law, {BRAND} and its creator shall not be liable
-            for any indirect, incidental, special, or consequential damages arising from your use of the
-            Service, including but not limited to loss of data or documents.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-3">9. Termination</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            We reserve the right to suspend or terminate access to the Service for any user who violates
-            these Terms, without prior notice.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-3">10. Changes to Terms</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            We may update these Terms from time to time. Updated terms will be posted on this page with a
-            revised &quot;Last updated&quot; date. Continued use of the Service after any changes constitutes
-            acceptance of the new Terms.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-3">11. Governing Law</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            These Terms are governed by and construed in accordance with the laws of India. Any disputes
-            arising under these Terms shall be subject to the exclusive jurisdiction of courts in India.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-3">12. Contact</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Questions about these Terms? Contact <strong>Vishwesh Shinde</strong> at{" "}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 dark:text-blue-400 underline">
-              {CONTACT_EMAIL}
-            </a>
-            .
-          </p>
-        </section>
-      </motion.div>
+          <section id="contact" className="rounded-3xl border border-white/10 bg-zinc-950/70 p-8 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white mb-3">6. Questions &amp; Support</h2>
+            <p className="text-zinc-400 leading-relaxed mb-4">
+              Questions regarding these Terms should be directed to <strong>Vishwesh Shinde</strong> at{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-white underline hover:text-zinc-300">
+                {CONTACT_EMAIL}
+              </a>:
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black hover:bg-zinc-200 font-semibold text-xs transition-colors"
+            >
+              <span>Contact Support</span>
+              <ArrowRight size={14} />
+            </Link>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

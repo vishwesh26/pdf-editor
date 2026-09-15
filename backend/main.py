@@ -19,6 +19,6 @@ app.add_middleware(
 app.include_router(pdf.router, prefix="/api/pdf", tags=["PDF"])
 app.include_router(webhook.router, prefix="/api/webhook", tags=["Webhooks"])
 
-@app.get("/")
-def read_root():
+@app.api_route("/", methods=["GET", "HEAD"])
+async def read_root():
     return {"status": "ok", "message": "PDFTextEdit Pro API is running"}

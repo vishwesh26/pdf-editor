@@ -1,5 +1,5 @@
 # Node
-frontend/node_modules/
+node_modules/
 frontend/.next/
 frontend/out/
 frontend/build/
@@ -9,11 +9,15 @@ frontend/.env.test.local
 frontend/.env.production.local
 
 # Python
+venv/
 backend/venv/
 backend/__pycache__/
 backend/*.pyc
 backend/.env
 backend/uploads/
+
+# IDE
+.vscode/
 
 # OS
 .DS_Store

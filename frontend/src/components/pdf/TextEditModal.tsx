@@ -1,93 +1,178 @@
-import { useEditorStore } from "@/store/editorStore";
-import { useEffect, useState } from "react";
+"use client";
+
+import { useState } from "react";
+import { useEditorStore, TextBlock } from "@/store/editorStore";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check } from "lucide-react";
+import { X, Check, Type, Palette, Move, CornerDownLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface TextEditFormProps {
+  block: TextBlock;
+  onSave: (newText: string) => void;
+  onCancel: () => void;
+}
+
+function TextEditForm({ block, onSave, onCancel }: TextEditFormProps) {
+  const [text, setText] = useState(block.text);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      onCancel();
+    } else if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      onSave(text);
+    }
+  };
+
+  const fontName = block.font ? block.font.split(",")[0] : "Embedded Font";
+  const charCount = text.length;
+  const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+  return (
+    <div onKeyDown={handleKeyDown}>
+      {/* Modal Header */}
+      <div className="px-5 py-4 border-b border-white/10 flex justify-between items-center bg-zinc-950/80">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
+            <Type size={15} />
+          </div>
+          <div>
+            <h3 className="font-bold text-white text-base">Edit Text Layer</h3>
+            <p className="text-[11px] text-zinc-400">Page {block.page} Text Span</p>
+          </div>
+        </div>
+        <button
+          onClick={onCancel}
+          className="text-zinc-400 hover:text-white rounded-lg p-1.5 hover:bg-white/10 transition-colors"
+          title="Close (Esc)"
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      {/* Modal Body */}
+      <div className="p-5 space-y-4">
+        {/* Font Properties Inspector Strip */}
+        <div className="grid grid-cols-3 gap-2 text-xs bg-zinc-900/90 p-3 rounded-2xl border border-white/10">
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase font-bold text-zinc-500 flex items-center gap-1">
+              <Type size={10} /> Font
+            </span>
+            <span className="font-semibold text-white truncate" title={fontName}>
+              {fontName}
+            </span>
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase font-bold text-zinc-500 flex items-center gap-1">
+              <Move size={10} /> Size
+            </span>
+            <span className="font-semibold text-white">
+              {Math.round(block.size)} pt
+            </span>
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase font-bold text-zinc-500 flex items-center gap-1">
+              <Palette size={10} /> Color
+            </span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span
+                className="w-3.5 h-3.5 rounded-full border border-white/30 shrink-0"
+                style={{ backgroundColor: block.color || "#000000" }}
+              />
+              <span className="font-mono text-[11px] text-zinc-300">
+                {block.color || "#000"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Text Area Input */}
+        <div>
+          <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+            Text Content
+          </label>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="w-full h-28 sm:h-36 px-4 py-3 bg-zinc-900 border border-white/10 rounded-2xl focus:border-white/40 focus:ring-1 focus:ring-white/20 outline-none resize-none text-sm sm:text-base text-white font-sans leading-relaxed transition-all shadow-inner"
+            autoFocus
+            placeholder="Enter text..."
+          />
+          <div className="flex justify-between items-center text-[11px] text-zinc-500 mt-1 px-1">
+            <span>
+              {charCount} chars • {wordCount} words
+            </span>
+            <span className="flex items-center gap-1">
+              <CornerDownLeft size={11} /> Ctrl + Enter to save
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Footer Actions */}
+      <div className="px-5 py-4 bg-zinc-950/80 border-t border-white/10 flex justify-end gap-2.5">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onCancel}
+          className="text-xs text-zinc-400 hover:text-white"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="white"
+          size="sm"
+          onClick={() => onSave(text)}
+          className="text-xs font-semibold px-5 gap-1.5"
+        >
+          <Check size={14} />
+          <span>Save Edit</span>
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 export default function TextEditModal() {
-  const { selectedBlock, setSelectedBlock, addEdit, updateTextBlockText } = useEditorStore();
-  const [text, setText] = useState("");
-
-  useEffect(() => {
-    if (selectedBlock) {
-      setText(selectedBlock.text);
-    }
-  }, [selectedBlock]);
+  const { selectedBlock, setSelectedBlock, addEdit, updateTextBlockText } =
+    useEditorStore();
 
   if (!selectedBlock) return null;
 
-  const handleSave = () => {
-    // Add to edits queue
+  const handleSave = (newText: string) => {
     addEdit({
       id: selectedBlock.id,
       page: selectedBlock.page,
-      text: text,
+      text: newText,
       original_bbox: selectedBlock.bbox,
       font: selectedBlock.font,
       size: selectedBlock.size,
       color: selectedBlock.color,
-      flags: selectedBlock.flags
+      flags: selectedBlock.flags,
     });
 
-    // Optimistically update the UI text block
-    updateTextBlockText(selectedBlock.page, selectedBlock.id, text);
-    
-    // Close modal
+    updateTextBlockText(selectedBlock.page, selectedBlock.id, newText);
     setSelectedBlock(null);
   };
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
-        <motion.div 
-          initial={{ opacity: 0, y: 50, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 50, scale: 0.95 }}
-          className="bg-white dark:bg-zinc-900 w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl border border-black/10 dark:border-white/10 overflow-hidden"
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: "spring", duration: 0.3 }}
+          className="bg-zinc-950/95 w-full max-w-md sm:max-w-lg rounded-3xl shadow-2xl border border-white/15 overflow-hidden backdrop-blur-2xl"
         >
-          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-center bg-gray-50 dark:bg-zinc-950">
-            <h3 className="font-bold text-base sm:text-lg">Edit Text</h3>
-            <button 
-              onClick={() => setSelectedBlock(null)}
-              className="text-gray-500 hover:text-black dark:hover:text-white transition-colors p-2"
-            >
-              <X size={20} />
-            </button>
-          </div>
-          
-          <div className="p-4 sm:p-6">
-            <div className="mb-4 flex flex-wrap gap-2 sm:gap-4 text-xs text-muted-foreground bg-gray-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-gray-100 dark:border-zinc-800">
-              <div><span className="font-semibold text-foreground">Font:</span> {selectedBlock.font.split(',')[0]}</div>
-              <div><span className="font-semibold text-foreground">Size:</span> {Math.round(selectedBlock.size)}pt</div>
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-foreground">Color:</span> 
-                <span className="w-3 h-3 rounded-full border border-gray-300 inline-block" style={{ backgroundColor: selectedBlock.color }}></span>
-              </div>
-            </div>
-
-            <label className="block text-sm font-medium mb-2">Text Content</label>
-            <textarea 
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              className="w-full h-24 sm:h-32 px-4 py-3 bg-white dark:bg-black border border-gray-300 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none text-sm sm:text-base"
-              autoFocus
-            />
-          </div>
-          
-          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 dark:bg-zinc-950 border-t border-gray-100 dark:border-zinc-800 flex justify-end gap-2 sm:gap-3">
-            <button 
-              onClick={() => setSelectedBlock(null)}
-              className="px-4 py-2 text-sm font-medium hover:bg-gray-200 dark:hover:bg-zinc-800 rounded-lg transition-colors flex-1 sm:flex-none"
-            >
-              Cancel
-            </button>
-            <button 
-              onClick={handleSave}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-colors shadow-lg shadow-blue-500/20 flex-1 sm:flex-none"
-            >
-              <Check size={16} />
-              Save Edit
-            </button>
-          </div>
+          <TextEditForm
+            key={selectedBlock.id}
+            block={selectedBlock}
+            onSave={handleSave}
+            onCancel={() => setSelectedBlock(null)}
+          />
         </motion.div>
       </div>
     </AnimatePresence>
