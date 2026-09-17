@@ -3,16 +3,24 @@ node_modules/
 frontend/.next/
 frontend/out/
 frontend/build/
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+!.env.local.example
+frontend/.env
 frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
+frontend/.env.*.local
+backend/.env
+backend/.env.*
 
 # Python
 venv/
 backend/venv/
-backend/__pycache__/
-backend/*.pyc
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
 backend/.env
 backend/uploads/
 

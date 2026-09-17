@@ -40,6 +40,13 @@ export default function EditorPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Auto-close sidebar on mobile devices on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  }, []);
+
   // Fetch text blocks on mount
   useEffect(() => {
     if (!fileId) return;
@@ -155,15 +162,23 @@ export default function EditorPage() {
         {/* Toggle Sidebar Button */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="absolute left-3 top-3 z-20 p-2 rounded-xl border border-white/10 bg-zinc-900/90 text-zinc-400 hover:text-white backdrop-blur-md transition-colors shadow-lg"
+          className="absolute left-3 top-3 z-30 p-2 sm:p-2.5 rounded-xl border border-white/10 bg-zinc-900/90 text-zinc-400 hover:text-white backdrop-blur-md transition-colors shadow-lg"
           title={sidebarOpen ? "Hide Pages Sidebar" : "Show Pages Sidebar"}
         >
-          {sidebarOpen ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
+          {sidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeft size={18} />}
         </button>
+
+        {/* Mobile backdrop for sidebar */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/60 z-20 backdrop-blur-xs"
+          />
+        )}
 
         {/* Collapsible Page Thumbnails Sidebar */}
         {sidebarOpen && (
-          <aside className="w-48 sm:w-56 bg-zinc-950/95 border-r border-white/10 flex flex-col shrink-0 z-10 transition-all">
+          <aside className="fixed md:relative left-0 top-0 bottom-0 md:top-auto md:bottom-auto w-52 sm:w-56 bg-zinc-950/95 border-r border-white/10 flex flex-col shrink-0 z-30 md:z-10 transition-all shadow-2xl md:shadow-none">
             <div className="p-3 border-b border-white/10 flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-wider pl-12">
               <span>Pages ({numPages || 1})</span>
             </div>
@@ -175,7 +190,12 @@ export default function EditorPage() {
                 return (
                   <button
                     key={i}
-                    onClick={() => setCurrentPage(pageNum)}
+                    onClick={() => {
+                      setCurrentPage(pageNum);
+                      if (typeof window !== "undefined" && window.innerWidth < 768) {
+                        setSidebarOpen(false);
+                      }
+                    }}
                     className={`w-full rounded-xl p-2.5 flex flex-col items-center gap-2 transition-all text-left group ${
                       isSelected
                         ? "border border-white/40 bg-white/10 shadow-sm"
@@ -208,8 +228,8 @@ export default function EditorPage() {
         )}
 
         {/* Blueprint Canvas Workspace */}
-        <main className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start bg-dot-grid">
-          <div className="py-4">
+        <main className="flex-1 overflow-auto p-2 sm:p-6 md:p-8 flex justify-center items-start bg-dot-grid">
+          <div className="py-2 sm:py-4">
             <PDFViewer
               url={`${
                 process.env.NEXT_PUBLIC_PYTHON_API_URL || "http://localhost:8000"

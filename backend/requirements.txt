@@ -7,3 +7,7 @@ stripe
 python-dotenv
 pillow
 razorpay
+python-docx
+openpyxl
+python-pptx
+pdf2docx

@@ -153,25 +153,25 @@ export default function DropZone({ compact = false }: DropZoneProps) {
 
         {/* Action Button */}
         {!isUploading && (
-          <div className="mt-6 flex flex-col items-center gap-3">
+          <div className="mt-5 sm:mt-6 flex flex-col items-center gap-3 w-full sm:w-auto">
             <Button
               type="button"
               variant="default"
               size="default"
-              className="px-5 pointer-events-none"
+              className="px-6 h-11 sm:h-10 text-sm font-semibold pointer-events-none w-full sm:w-auto justify-center"
             >
-              <FileText className="mr-1.5 h-3.5 w-3.5" />
+              <FileText className="mr-2 h-4 w-4" />
               Choose PDF File
             </Button>
 
-            <div className="flex items-center gap-3 text-[11px] text-zinc-500">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-zinc-500">
               <span className="flex items-center gap-1">
-                <ShieldCheck className="h-3 w-3 text-zinc-500" />
+                <ShieldCheck className="h-3.5 w-3.5 text-zinc-500" />
                 Auto-deleted after 24h
               </span>
-              <span className="text-zinc-700">•</span>
+              <span className="text-zinc-700 hidden sm:inline">•</span>
               <span className="flex items-center gap-1">
-                <Zap className="h-3 w-3 text-zinc-500" />
+                <Zap className="h-3.5 w-3.5 text-zinc-500" />
                 Zero watermarks
               </span>
             </div>

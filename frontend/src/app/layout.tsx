@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
@@ -9,6 +9,12 @@ import { Analytics } from "@vercel/analytics/next";
 import { GridPulse } from "@/components/ui/grid-pulse";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: "PustakEdits - #1 Free PDF Text Editor Online (No Watermark)",
@@ -96,9 +102,9 @@ export default function RootLayout({
         </div>
 
         <AuthProvider>
-          <div className="relative z-10 flex flex-col min-h-screen">
+          <div className="relative z-10 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
             <Navbar />
-            <main className="flex-1 flex flex-col">
+            <main className="flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden">
               {children}
             </main>
             <Footer />

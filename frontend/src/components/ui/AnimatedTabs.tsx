@@ -25,7 +25,7 @@ export default function AnimatedTabs({
 }: AnimatedTabsProps) {
   return (
     <div
-      className={`inline-flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950 p-1 ${className}`}
+      className={`flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950 p-1 overflow-x-auto scrollbar-none max-w-full ${className}`}
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
@@ -33,7 +33,7 @@ export default function AnimatedTabs({
           <button
             key={tab.id}
             onClick={() => onChange(tab.id)}
-            className={`relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors outline-none ${
+            className={`relative flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 sm:py-1.5 text-xs font-medium transition-colors outline-none whitespace-nowrap ${
               isActive
                 ? "text-white font-semibold"
                 : "text-zinc-400 hover:text-zinc-200"
