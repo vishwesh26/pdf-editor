@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useImperativeHandle, forwardRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef, useCallback } from "react";
 
 export interface TurnstileWidgetRef {
   reset: () => void;
@@ -27,9 +27,13 @@ declare global {
           action?: string;
           theme?: "dark" | "light" | "auto";
           size?: "normal" | "compact" | "flexible";
+          retry?: "auto" | "never";
+          "retry-interval"?: number;
+          refreshExpired?: "auto" | "manual" | "never";
           callback?: (token: string) => void;
           "expired-callback"?: () => void;
           "error-callback"?: (errorCode?: string) => void;
+          [key: string]: any;
         }
       ) => string;
       reset: (widgetId?: string) => void;
@@ -67,6 +71,8 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
     const onErrorRef = useRef(onError);
     onErrorRef.current = onError;
 
+    const [hasError, setHasError] = useState<boolean>(false);
+
     const siteKey =
       process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || DEFAULT_SITE_KEY;
 
@@ -90,7 +96,10 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
           action: action,
           theme: theme,
           size: size,
+          retry: 'auto',
+          'retry-interval': 2000,
           callback: (token: string) => {
+            setHasError(false);
             onVerifyRef.current?.(token);
           },
           "expired-callback": () => {
@@ -98,11 +107,7 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
           },
           "error-callback": (code?: string) => {
             console.error(`[Cloudflare Turnstile] Verification failed (code: ${code || 'unknown'})`);
-            if (code === '110200' || code === '300010' || code === '600010') {
-              console.warn(
-                `[Cloudflare Turnstile] Code ${code} occurs when the origin (http://localhost:3000) is not listed under allowed Hostnames in Cloudflare Dashboard, or when browser extensions/ad-blockers block challenges.`
-              );
-            }
+            setHasError(true);
             onErrorRef.current?.(code);
           },
         });
@@ -188,8 +193,27 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
     }, [renderWidget]);
 
     return (
-      <div className={`flex items-center justify-center my-2 max-w-full overflow-hidden ${className}`}>
+      <div className={`flex flex-col items-center justify-center my-2 max-w-full overflow-hidden ${className}`}>
         <div ref={containerRef} className="min-h-[65px] min-w-[280px] sm:min-w-[300px] flex items-center justify-center" />
+        {hasError && (
+          <button
+            type="button"
+            onClick={() => {
+              setHasError(false);
+              if (window.turnstile && widgetIdRef.current) {
+                try {
+                  window.turnstile.reset(widgetIdRef.current);
+                } catch {
+                  isRenderedRef.current = false;
+                  renderWidget();
+                }
+              }
+            }}
+            className="text-[11px] text-zinc-400 hover:text-white underline mt-1.5 transition-colors cursor-pointer"
+          >
+            Verification issue? Click to retry
+          </button>
+        )}
       </div>
     );
   }
