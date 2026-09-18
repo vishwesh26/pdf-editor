@@ -117,7 +117,10 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
 
   // Poll async background job
   const pollJobStatus = async (pollUrl: string) => {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const backendUrl =
+      process.env.NEXT_PUBLIC_PYTHON_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://localhost:8000";
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`${backendUrl}${pollUrl}`);
@@ -220,7 +223,10 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
     }
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const backendUrl =
+        process.env.NEXT_PUBLIC_PYTHON_API_URL ||
+        process.env.NEXT_PUBLIC_API_URL ||
+        "http://localhost:8000";
       const endpoint = tool.apiEndpoint || `/api/tools/${tool.slug}`;
       const res = await fetch(`${backendUrl}${endpoint}`, {
         method: 'POST',
@@ -724,7 +730,7 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
               <a
-                href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${result.download_url}`}
+                href={`${process.env.NEXT_PUBLIC_PYTHON_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${result.download_url}`}
                 download={result.file_name}
                 className="w-full sm:w-auto px-7 py-3.5 sm:py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-zinc-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20 transition-all"
               >
