@@ -31,20 +31,27 @@ async def add_rate_limit_headers(request: Request, call_next):
             content={"detail": f"Internal server error: {str(exc)}"}
         )
 
+extra_origins_str = os.getenv("ALLOWED_ORIGINS", "")
+extra_origins = [o.strip() for o in extra_origins_str.split(",") if o.strip()]
+
+allowed_origins = list(dict.fromkeys([
+    "https://pustakedits.tech",
+    "https://www.pustakedits.tech",
+    "https://pustakedit.vercel.app",
+    "https://pdfeditor-one.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+] + extra_origins))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:3001",
-        "https://pdfeditor-one.vercel.app",
-        "https://pustakedit.vercel.app",
-    ],
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:[0-9]+)?",
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https?://.*(pustakedits\.tech|vercel\.app|localhost|127\.0\.0\.1)(:[0-9]+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Content-Disposition"],
+    expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Content-Disposition", "X-Turnstile-Token"],
 )
 
 app.include_router(pdf.router, prefix="/api/pdf", tags=["PDF"])
