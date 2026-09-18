@@ -68,7 +68,7 @@ def get_client_ip(request: Request) -> str:
         return forwarded.split(",")[0].strip()
     return request.client.host if request.client else "127.0.0.1"
 
-def check_rate_limit(request: Request, tier: str = "guest"):
+async def check_rate_limit(request: Request, tier: str = "guest"):
     client_id = get_client_ip(request)
     allowed, remaining, limit, reset = rate_limiter.check(client_id, tier)
 
@@ -87,3 +87,9 @@ def check_rate_limit(request: Request, tier: str = "guest"):
                 "X-RateLimit-Reset": str(reset),
             }
         )
+
+    # Cloudflare Turnstile token verification for tool execution / uploads
+    token = request.headers.get("X-Turnstile-Token") or request.headers.get("cf-turnstile-response")
+    from services.turnstile import verify_turnstile_token
+    await verify_turnstile_token(token, client_ip=client_id)
+

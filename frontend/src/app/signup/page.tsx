@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { FileEdit, Loader2, Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import TurnstileWidget, { TurnstileWidgetRef } from "@/components/ui/TurnstileWidget";
 
 function SignupContent() {
   const searchParams = useSearchParams();
@@ -17,11 +18,14 @@ function SignupContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return toast.error("Please enter both email and password");
     if (password.length < 6) return toast.error("Password must be at least 6 characters");
+    if (!turnstileToken) return toast.error("Please complete the Cloudflare security verification");
 
     setIsLoading(true);
     try {
@@ -30,6 +34,7 @@ function SignupContent() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}${redirectTo}`,
+          captchaToken: turnstileToken,
         },
       });
 
@@ -44,6 +49,8 @@ function SignupContent() {
       }
     } finally {
       setIsLoading(false);
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
     }
   };
 
@@ -126,9 +133,21 @@ function SignupContent() {
             </div>
           </div>
 
+          {/* Cloudflare Turnstile Bot Security Widget */}
+          <TurnstileWidget
+            ref={turnstileRef}
+            action="signup"
+            onVerify={(token) => setTurnstileToken(token)}
+            onExpire={() => setTurnstileToken("")}
+            onError={() => {
+              setTurnstileToken("");
+              toast.error("Turnstile verification failed. Please try again.");
+            }}
+          />
+
           <Button
             type="submit"
-            disabled={isLoading || isGoogleLoading}
+            disabled={isLoading || isGoogleLoading || !turnstileToken}
             variant="white"
             size="lg"
             className="w-full justify-center text-sm font-semibold gap-2 mt-2"

@@ -18,10 +18,11 @@ import {
   Sparkles,
   Lock,
   Stamp,
-  Binary,
   Layers,
+  ShieldCheck,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import TurnstileWidget, { TurnstileWidgetRef } from '@/components/ui/TurnstileWidget';
 import { PDFToolDef } from '@/types/tools';
 import {
   CompressionQuality,
@@ -42,6 +43,10 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Bot Security state
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
   // Job & Progress state
   const [isProcessing, setIsProcessing] = useState(false);
@@ -113,6 +118,8 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
     setIsProcessing(false);
     setProgress(0);
     setErrorMessage(null);
+    setTurnstileToken('');
+    turnstileRef.current?.reset();
   };
 
   // Poll async background job
@@ -161,6 +168,11 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
       return;
     }
 
+    if (!turnstileToken) {
+      toast.error('Please complete security bot verification first');
+      return;
+    }
+
     if ((tool.id === 'merge-pdf' || tool.id === 'compare-pdf') && selectedFiles.length < 2) {
       toast.error('Please upload at least 2 PDF files to proceed');
       return;
@@ -182,6 +194,8 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
     setErrorMessage(null);
 
     const formData = new FormData();
+    formData.append('cf-turnstile-response', turnstileToken);
+
     if (tool.isMultiFile) {
       selectedFiles.forEach((file) => formData.append('files', file));
     } else {
@@ -230,6 +244,9 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
       const endpoint = tool.apiEndpoint || `/api/tools/${tool.slug}`;
       const res = await fetch(`${backendUrl}${endpoint}`, {
         method: 'POST',
+        headers: {
+          'X-Turnstile-Token': turnstileToken,
+        },
         body: formData,
       });
 
@@ -255,6 +272,10 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
       setProgress(0);
       setErrorMessage(err.message || 'An error occurred while processing the document.');
       toast.error(err.message || 'Failed to process document');
+    } finally {
+      // Cloudflare Turnstile tokens are single-use; reset widget for next action
+      setTurnstileToken('');
+      turnstileRef.current?.reset();
     }
   };
 
@@ -668,10 +689,35 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
               </div>
             )}
 
+            {/* Turnstile Bot Verification */}
+            {selectedFiles.length > 0 && (
+              <div className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="space-y-1 text-center sm:text-left">
+                  <div className="text-xs font-semibold text-white flex items-center justify-center sm:justify-start gap-2">
+                    <ShieldCheck className="w-4 h-4 text-teal-400" />
+                    <span>Security Verification</span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400">
+                    Cloudflare Turnstile confirms human verification before executing document operations.
+                  </p>
+                </div>
+                <div className="flex justify-center">
+                  <TurnstileWidget
+                    ref={turnstileRef}
+                    action="tool_process"
+                    theme="dark"
+                    onVerify={(token) => setTurnstileToken(token)}
+                    onExpire={() => setTurnstileToken('')}
+                    onError={() => setTurnstileToken('')}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Execute Button */}
             <div className="pt-2 flex justify-end">
               <button
-                disabled={selectedFiles.length === 0 || isProcessing}
+                disabled={selectedFiles.length === 0 || isProcessing || !turnstileToken}
                 onClick={handleExecute}
                 className="w-full sm:w-auto px-6 py-3.5 sm:py-3 rounded-xl bg-white hover:bg-zinc-200 disabled:opacity-40 disabled:hover:bg-white text-zinc-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer disabled:cursor-not-allowed"
               >
@@ -679,6 +725,11 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
                   <>
                     <RotateCw className="w-4 h-4 animate-spin" />
                     <span>Processing Document...</span>
+                  </>
+                ) : !turnstileToken ? (
+                  <>
+                    <ShieldCheck className="w-4 h-4 text-zinc-500" />
+                    <span>Verify to Execute {tool.shortTitle}</span>
                   </>
                 ) : (
                   <>

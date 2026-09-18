@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Depends
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import shutil
@@ -8,11 +8,15 @@ from typing import Dict, Any
 
 from services.pdf_service import PDFService, UPLOAD_DIR
 from services.models import UpdateTextRequest
+from services.turnstile import check_turnstile
 
 router = APIRouter()
 
 @router.post("/upload")
-async def upload_pdf(file: UploadFile = File(...)):
+async def upload_pdf(
+    file: UploadFile = File(...),
+    _ts=Depends(check_turnstile)
+):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
     

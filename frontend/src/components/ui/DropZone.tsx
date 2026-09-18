@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   UploadCloud,
@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Button } from "./button";
+import TurnstileWidget, { TurnstileWidgetRef } from "./TurnstileWidget";
 
 interface DropZoneProps {
   compact?: boolean;
@@ -21,12 +22,19 @@ interface DropZoneProps {
 export default function DropZone({ compact = false }: DropZoneProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetRef>(null);
   const router = useRouter();
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (!file) return;
+
+      if (!turnstileToken) {
+        toast.error("Please complete the security bot verification before uploading.");
+        return;
+      }
 
       if (file.size > 30 * 1024 * 1024) {
         toast.error("File is too large. Max size is 30MB.");
@@ -37,6 +45,7 @@ export default function DropZone({ compact = false }: DropZoneProps) {
       setUploadProgress("Uploading PDF to vector engine...");
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("cf-turnstile-response", turnstileToken);
 
       try {
         const API_URL =
@@ -45,6 +54,9 @@ export default function DropZone({ compact = false }: DropZoneProps) {
 
         const response = await fetch(`${API_URL}/api/pdf/upload`, {
           method: "POST",
+          headers: {
+            "X-Turnstile-Token": turnstileToken,
+          },
           body: formData,
         });
 
@@ -92,9 +104,12 @@ export default function DropZone({ compact = false }: DropZoneProps) {
         console.error(error);
         toast.error("Failed to upload PDF. Ensure backend server is reachable.");
         setIsUploading(false);
+      } finally {
+        setTurnstileToken("");
+        turnstileRef.current?.reset();
       }
     },
-    [router]
+    [router, turnstileToken]
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
@@ -174,6 +189,25 @@ export default function DropZone({ compact = false }: DropZoneProps) {
                 <Zap className="h-3.5 w-3.5 text-zinc-500" />
                 Zero watermarks
               </span>
+            </div>
+
+            {/* Turnstile Bot Verification Widget */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="mt-3 pt-3 border-t border-zinc-900 w-full flex flex-col items-center"
+            >
+              <div className="text-[11px] text-zinc-400 mb-1.5 flex items-center gap-1.5 font-medium">
+                <ShieldCheck className="h-3.5 w-3.5 text-sky-400" />
+                <span>Protected by Cloudflare Turnstile</span>
+              </div>
+              <TurnstileWidget
+                ref={turnstileRef}
+                action="pdf_upload"
+                theme="dark"
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken("")}
+                onError={() => setTurnstileToken("")}
+              />
             </div>
           </div>
         )}
