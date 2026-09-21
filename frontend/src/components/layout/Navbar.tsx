@@ -86,8 +86,6 @@ export default function Navbar() {
   }, [toolsMenuOpen]);
 
   const navLinks = [
-    { label: "Features", href: "/#features" },
-    { label: "How it Works", href: "/#how-it-works" },
     { label: "Contact", href: "/contact" },
   ];
 
@@ -172,15 +170,30 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Button & CTA */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:hidden">
+          {/* Mobile GitHub Star Option */}
+          <a
+            href="https://github.com/vishwesh26/pdf-editor"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Star vishwesh26/pdf-editor on GitHub"
+            className="inline-flex items-center gap-1.5 px-2.5 h-9 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-xl transition-colors shrink-0"
+          >
+            <GithubIcon className="w-3.5 h-3.5 text-zinc-300" />
+            <span className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-300">
+              <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+              <span>{starCount !== null ? starCount.toLocaleString() : "0"}</span>
+            </span>
+          </a>
+
           <Link href="/dashboard">
-            <Button variant="default" size="sm" className="px-3.5 h-9 text-xs font-semibold">
+            <Button variant="default" size="sm" className="px-3 sm:px-3.5 h-9 text-xs font-semibold rounded-xl">
               Editor
             </Button>
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-900 transition-colors"
+            className="p-2 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-900 transition-colors shrink-0"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -254,22 +267,6 @@ export default function Navbar() {
               </nav>
 
               <div className="pt-3 border-t border-zinc-800/80 flex flex-col gap-2.5">
-                <a
-                  href="https://github.com/vishwesh26/pdf-editor"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-medium rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <GithubIcon className="w-4 h-4 text-zinc-300" />
-                    <span>Star on GitHub</span>
-                  </div>
-                  <span className="inline-flex items-center gap-1 font-mono text-zinc-400">
-                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                    <span>{starCount !== null ? starCount.toLocaleString() : "0"}</span>
-                  </span>
-                </a>
-
                 <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="w-full">
                   <Button variant="default" className="w-full justify-center text-sm h-11">
                     Launch Free Editor
