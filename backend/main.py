@@ -9,11 +9,23 @@ from routers import pdf, webhook, tools, contact
 
 app = FastAPI(title="PustakEdits API")
 
+def get_cors_headers(request: Request) -> dict:
+    origin = request.headers.get("origin")
+    if origin:
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    return {}
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
         content={"detail": f"Server error: {str(exc)}"},
+        headers=get_cors_headers(request)
     )
 
 @app.middleware("http")
@@ -28,7 +40,8 @@ async def add_rate_limit_headers(request: Request, call_next):
     except Exception as exc:
         return JSONResponse(
             status_code=500,
-            content={"detail": f"Internal server error: {str(exc)}"}
+            content={"detail": f"Internal server error: {str(exc)}"},
+            headers=get_cors_headers(request)
         )
 
 extra_origins_str = os.getenv("ALLOWED_ORIGINS", "")

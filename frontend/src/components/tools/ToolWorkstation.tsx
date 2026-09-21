@@ -190,7 +190,7 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
 
     setIsProcessing(true);
     setProgress(15);
-    setProgressStatus('Uploading to processing engine...');
+    setProgressStatus('Uploading to high-speed processing engine...');
     setErrorMessage(null);
 
     const formData = new FormData();
@@ -236,6 +236,23 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
       formData.append('force_ocr', forceOcr.toString());
     }
 
+    // Smooth progress ticker while awaiting response
+    let progressTimer: NodeJS.Timeout | null = setInterval(() => {
+      setProgress((prev) => {
+        if (prev < 40) {
+          setProgressStatus('Optimizing document streams & structure...');
+          return prev + 12;
+        } else if (prev < 70) {
+          setProgressStatus('Compressing & restructuring assets...');
+          return prev + 10;
+        } else if (prev < 90) {
+          setProgressStatus('Finalizing document...');
+          return prev + 5;
+        }
+        return prev;
+      });
+    }, 400);
+
     try {
       const backendUrl =
         process.env.NEXT_PUBLIC_PYTHON_API_URL ||
@@ -250,6 +267,11 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
         body: formData,
       });
 
+      if (progressTimer) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+
       if (res.status === 202) {
         // Asynchronous job triggered by size threshold
         const jobData = await res.json();
@@ -260,6 +282,7 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
         // Synchronous job completed
         const data = await res.json();
         setProgress(100);
+        setProgressStatus('Processing complete!');
         setResult(data.result);
         setIsProcessing(false);
         toast.success('Document ready!');
@@ -268,11 +291,18 @@ export default function ToolWorkstation({ tool, relatedTools }: ToolWorkstationP
         throw new Error(errorData.detail || `Server error (${res.status})`);
       }
     } catch (err: any) {
+      if (progressTimer) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
       setIsProcessing(false);
       setProgress(0);
       setErrorMessage(err.message || 'An error occurred while processing the document.');
       toast.error(err.message || 'Failed to process document');
     } finally {
+      if (progressTimer) {
+        clearInterval(progressTimer);
+      }
       // Cloudflare Turnstile tokens are single-use; reset widget for next action
       setTurnstileToken('');
       turnstileRef.current?.reset();
