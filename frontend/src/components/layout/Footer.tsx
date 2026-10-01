@@ -61,6 +61,22 @@ export default function Footer() {
               Browser-based PDF text editor and complete utility suite. Directly modify original text layers in document-generated PDFs while preserving authentic font glyphs and layout.
             </p>
 
+            {/* UsefulShelf Badge */}
+  <div className="pt-3">
+    <a
+      href="https://usefulshelf.co/?utm_source=pustakedits.tech&utm_medium=referral&utm_campaign=badge&utm_content=lime"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="https://usefulshelf.co/badge/usefulshelf.svg?theme=lime"
+        alt="Featured on UsefulShelf"
+        width={248}
+        height={66}
+      />
+    </a>
+  </div>
+
             <div className="flex items-center gap-2 pt-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
               <span className="text-[11px] font-mono text-zinc-400">
